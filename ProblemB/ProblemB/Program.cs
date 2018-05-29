@@ -1,28 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Point = System.Tuple<int, int>;
 
-/**
- * Specifically wanted to make a non-destructive algorithm.
- * Modifying the incoming array would probably be faster,
- * and use less memory. Since it's read from stdin it doesn't 
- * really matter, but I simply prefer non-destructive when possible
- */
 public class Program
 {
 	const char Black = '#';
-	const char White = '-';
-
-	private struct Point
-	{
-		public int x;
-		public int y;
-	}
-	private class PointComparer : IEqualityComparer<Point>
-	{
-		public bool Equals(Point x, Point y) => x.x == y.x && x.y == y.y;
-		public int GetHashCode(Point obj) => obj.x ^ obj.y;
-	}
 
 	public static void Main(string[] args)
 	{
@@ -34,41 +17,50 @@ public class Program
 		}
 	}
 
-	private static readonly IEqualityComparer<Point> comparer = new PointComparer();
-
 	public static int CountStarsInMap(char[][] testCase)
 	{
-		var width = testCase[0].Length;
-		var visitedStars = new List<HashSet<Point>>();
+		var starCount = 0;
 		for (var heightOffset = 0; heightOffset < testCase.Length; ++heightOffset)
 		{
-			for (var widthIndex = 0; widthIndex < width; widthIndex++)
+			for (var widthIndex = 0; widthIndex < testCase[0].Length; ++widthIndex)
 			{
-				var thisPoint = new Point { x = heightOffset, y = widthIndex };
-				var star = new HashSet<Point>();
-				FindAdjecantStarPoints(visitedStars, star, testCase, heightOffset, widthIndex);
-				if (star.Count != 0) visitedStars.Add(star);
+				var newStar = FindAdjecantStarPoints(testCase, heightOffset, widthIndex);
+				if (newStar) starCount++;
 			}
 		}
 
-		return visitedStars.Count;
+		return starCount;
 	}
 
-	private static void FindAdjecantStarPoints(List<HashSet<Point>> visited, HashSet<Point> currentStar, char[][] testCase, int x, int y)
+	/**
+	 * Recursion would probably be the most obvious choice here, and
+	 * depending on optimization might even be faster, but this is
+	 * more fun, good pratice, and I never get to use Queue otherwise :)
+	 */
+	private static bool FindAdjecantStarPoints(char[][] testCase, int x, int y)
 	{
-		if (x < 0 || x >= testCase.Length) return;
-		if (y < 0 || y >= testCase[0].Length) return;
-		var thisPoint = new Point { x = x, y = y };
-		if (testCase[x][y] == Black || currentStar.Contains(thisPoint, comparer) || PartOfVisitedStart(visited, thisPoint)) return;
+		var newStar = false;
+		var toCheck = new Queue<Point>();
+		toCheck.Enqueue(new Point(x, y));
 
-		currentStar.Add(thisPoint);
-		FindAdjecantStarPoints(visited, currentStar, testCase, x + 1, y);
-		FindAdjecantStarPoints(visited, currentStar, testCase, x - 1, y);
-		FindAdjecantStarPoints(visited, currentStar, testCase, x, y - 1);
-		FindAdjecantStarPoints(visited, currentStar, testCase, x, y + 1);
+		if (toCheck.Count > 0)
+		while (toCheck.Count > 0)
+		{
+			var point = toCheck.Dequeue();
+			if (testCase[point.Item1][point.Item2] == Black) continue;
+
+			newStar = true;
+			testCase[point.Item1][point.Item2] = Black;
+
+			// Darken the sky. If we've found a new star, "blacken" all the adjoining points
+			if (point.Item1 != 0) toCheck.Enqueue(new Point(point.Item1 - 1, point.Item2));
+			if (point.Item1 + 1 < testCase.Length) toCheck.Enqueue(new Point(point.Item1 + 1, point.Item2));
+			if (point.Item2 != 0) toCheck.Enqueue(new Point(point.Item1, point.Item2 - 1));
+			if (point.Item2 + 1 < testCase[0].Length) toCheck.Enqueue(new Point(point.Item1, point.Item2 + 1));
+		}
+
+		return newStar;
 	}
-
-	private static bool PartOfVisitedStart(List<HashSet<Point>> visitedStars, Point p) => visitedStars.SelectMany(s => s).Contains(p, comparer);
 
 	private static List<char[][]> ReadMap()
 	{
@@ -83,9 +75,7 @@ public class Program
 		for (int lineIndex = 0; lineIndex < file.Count; ++lineIndex)
 		{
 			var pair = file[lineIndex].Split(' ').Select(int.Parse).ToArray();
-
 			cases.Add(file.Skip(lineIndex + 1).Take(pair[0]).Select(l => l.ToCharArray()).ToArray());
-
 			lineIndex += pair[0];
 		}
 
