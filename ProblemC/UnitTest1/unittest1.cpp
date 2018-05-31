@@ -36,5 +36,48 @@ namespace UnitTest1
 			Assert::AreEqual(1, res);
 			Assert::AreEqual(1, pOutBuffer[0]);
 		}
+
+		TEST_METHOD(DeadEnd) {
+			unsigned char pMap[] = {
+				'1', '1', '1', '1', '1',
+				'0', '1', '1', '0', '1',
+				'0', '1', '1', '0', '1',
+				'0', '0', '0', '0', '1',
+				'1', '1', '1', '1', '1'
+			};
+			int pOutBuffer[12];
+			auto res = FindPath(0, 0, 0, 4, pMap, 5, 5, pOutBuffer, 12);
+			Assert::AreEqual(12, res);
+		}
+
+		TEST_METHOD(MiddleOut) {
+			unsigned char pMap[] = {
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+			};
+
+			int pOutBuffer[12];
+			auto res = FindPath(4, 2, 2, 0, pMap, 5, 5, pOutBuffer, 12);
+			Assert::AreEqual(4, res);
+		}
+
+		TEST_METHOD(MiddleOut2) {
+			unsigned char pMap[] = {
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+			};
+
+			int pOutBuffer[12];
+			auto res = FindPath(4, 3, 2, 0, pMap, 5, 5, pOutBuffer, 12);
+			Assert::AreEqual(5, res);
+		}
 	};
 }
