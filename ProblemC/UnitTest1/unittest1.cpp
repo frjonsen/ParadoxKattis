@@ -5,11 +5,11 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest1
-{		
+{
 	TEST_CLASS(UnitTest1)
 	{
 	public:
-		
+
 		TEST_METHOD(Paradox1)
 		{
 			unsigned char pMap[] = { 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1 };
@@ -61,8 +61,23 @@ namespace UnitTest1
 			};
 
 			int pOutBuffer[12];
-			auto res = FindPath(4, 2, 2, 0, pMap, 5, 5, pOutBuffer, 12);
+			auto res = FindPath(2, 4, 2, 0, pMap, 5, 6, pOutBuffer, 12);
 			Assert::AreEqual(4, res);
+		}
+
+		TEST_METHOD(GoingAround) {
+			unsigned char pMap[] = {
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'0', '0', '0', '0', '1',
+				'1', '1', '1', '1', '1',
+			};
+
+			int pOutBuffer[13];
+			auto res = FindPath(0, 0, 0, 5, pMap, 5, 6, pOutBuffer, 13);
+			Assert::AreEqual(13, res);
 		}
 
 		TEST_METHOD(MiddleOut2) {
@@ -78,6 +93,22 @@ namespace UnitTest1
 			int pOutBuffer[12];
 			auto res = FindPath(4, 3, 2, 0, pMap, 5, 5, pOutBuffer, 12);
 			Assert::AreEqual(5, res);
+		}
+
+
+		TEST_METHOD(Obstacle) {
+			unsigned char pMap[] = {
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '0', '0', '0', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+				'1', '1', '1', '1', '1',
+			};
+
+			int pOutBuffer[12];
+			auto res = FindPath(2, 4, 2, 0, pMap, 5, 5, pOutBuffer, 12);
+			Assert::AreEqual(8, res);
 		}
 	};
 }
