@@ -23,18 +23,18 @@ namespace UnitTest1
 
 		TEST_METHOD(Paradox2)
 		{
-			unsigned char pMap[] = { 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1 };
-			int pOutBuffer[12];
-			auto res = FindPath(0, 0, 1, 2, pMap, 4, 3, pOutBuffer, 12);
-			Assert::AreEqual(-1, res);
+			unsigned char pMap[] = { 0, 0, 1, 0, 1, 1, 1, 0, 1 };
+			int pOutBuffer[7];
+			FindPath(2, 0, 0, 2, pMap, 3, 3, pOutBuffer, 7);
 		}
 
-		TEST_METHOD(NoPath)
+		TEST_METHOD(Minimal)
 		{
-			unsigned char pMap[] = { 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1 };
+			unsigned char pMap[] = { 1, 1 };
 			int pOutBuffer[12];
-			auto res = FindPath(0, 0, 1, 2, pMap, 4, 3, pOutBuffer, 12);
-			Assert::AreEqual(-1, res);
+			auto res = FindPath(0, 0, 1, 0, pMap, 2, 1, pOutBuffer, 12);
+			Assert::AreEqual(1, res);
+			Assert::AreEqual(1, pOutBuffer[0]);
 		}
 	};
 }
