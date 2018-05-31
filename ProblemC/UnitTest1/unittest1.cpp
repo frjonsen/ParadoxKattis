@@ -12,7 +12,12 @@ namespace UnitTest1
 
 		TEST_METHOD(Paradox1)
 		{
-			unsigned char pMap[] = { 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1 };
+			unsigned char pMap[] = { 
+				1, 1, 1,
+				1, 0, 1,
+				0, 1, 0,
+				1, 1, 1
+			};
 			int pOutBuffer[12];
 			auto res = FindPath(0, 0, 1, 2, pMap, 4, 3, pOutBuffer, 12);
 			Assert::AreEqual(3, res);
@@ -39,11 +44,11 @@ namespace UnitTest1
 
 		TEST_METHOD(DeadEnd) {
 			unsigned char pMap[] = {
-				'1', '1', '1', '1', '1',
-				'0', '1', '1', '0', '1',
-				'0', '1', '1', '0', '1',
-				'0', '0', '0', '0', '1',
-				'1', '1', '1', '1', '1'
+				1, 1, 1, 1, 1,
+				0, 1, 1, 0, 1,
+				0, 1, 1, 0, 1,
+				0, 0, 0, 0, 1,
+				1, 1, 1, 1, 1
 			};
 			int pOutBuffer[12];
 			auto res = FindPath(0, 0, 0, 4, pMap, 5, 5, pOutBuffer, 12);
@@ -52,12 +57,12 @@ namespace UnitTest1
 
 		TEST_METHOD(MiddleOut) {
 			unsigned char pMap[] = {
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
 			};
 
 			int pOutBuffer[12];
@@ -67,27 +72,30 @@ namespace UnitTest1
 
 		TEST_METHOD(GoingAround) {
 			unsigned char pMap[] = {
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'0', '0', '0', '0', '1',
-				'1', '1', '1', '1', '1',
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				0, 0, 0, 0, 1,
+				1, 1, 1, 1, 1,
 			};
 
 			int pOutBuffer[13];
-			auto res = FindPath(0, 0, 0, 5, pMap, 5, 6, pOutBuffer, 13);
-			Assert::AreEqual(13, res);
+			auto res = FindPath(0, 1, 0, 5, pMap, 5, 6, pOutBuffer, 13);
+			//Assert::AreEqual(pOutBuffer[0], 6);
+			//Assert::AreEqual(pOutBuffer[10], 26);
+			//Assert::AreEqual(pOutBuffer[11], 25);
+			Assert::AreEqual(12, res);
 		}
 
 		TEST_METHOD(MiddleOut2) {
 			unsigned char pMap[] = {
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
 			};
 
 			int pOutBuffer[12];
@@ -98,12 +106,12 @@ namespace UnitTest1
 
 		TEST_METHOD(Obstacle) {
 			unsigned char pMap[] = {
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '0', '0', '0', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
-				'1', '1', '1', '1', '1',
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 0, 0, 0, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1,
 			};
 
 			int pOutBuffer[12];
