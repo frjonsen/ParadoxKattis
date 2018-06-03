@@ -21,15 +21,14 @@ inline void get_neighbors(int* const neighbors, const int currentIndice, const i
 int FindPath(const int nStartX, const int nStartY,
 	const int nTargetX, const int nTargetY,
 	const unsigned char* pMap, const int nMapWidth, const int nMapHeight,
-	int* pOutBuffer, const int nOutBufferSize,
-	PointAttributes* point_attributes) {
+	int* pOutBuffer, const int nOutBufferSize, PointAttributes* point_attributes) {
 
 	int start = nStartY * nMapWidth + nStartX;
 	int end = nTargetY * nMapWidth + nTargetX;
 
 	//PointAttributes* point_attributes = new PointAttributes[nMapWidth * nMapHeight];
 
-	auto compare = [](const PointQueueItem& p1, const PointQueueItem& p2) { return p1.priority < p2.priority; };
+	auto compare = [](const PointQueueItem& p1, const PointQueueItem& p2) { return p1.priority > p2.priority; };
 
 	vector<PointQueueItem> container;
 	container.reserve(nMapWidth * nMapHeight);
@@ -53,12 +52,12 @@ int FindPath(const int nStartX, const int nStartY,
 
 		for (int i = 0; i < 4; ++i) {
 			if (neighbors[i] == -1 || pMap[neighbors[i]] == 0) continue;
-			PointAttributes& neighbor_attr = point_attributes[neighbors[i]];
+			auto& neighbor_attr = point_attributes[neighbors[i]];
 			if (neighbor_attr.came_from == -1 || neighbor_attr.cost_sum > current_attributes.cost_sum + 1) {
 				neighbor_attr.came_from = current.indice;
 				neighbor_attr.cost_sum = current_attributes.cost_sum + 1;
-				int cost = abs((neighbors[i] - end) / nMapWidth) + abs((neighbors[i] - end) % nMapWidth);
-				frontier.emplace(cost + neighbor_attr.came_from, neighbors[i]);
+				int cost = abs(neighbors[i] / nMapWidth - end / nMapWidth) + abs(neighbors[i] % nMapWidth - end % nMapWidth);
+				frontier.emplace(cost + neighbor_attr.cost_sum, neighbors[i]);
 			}
 		}
 	}
