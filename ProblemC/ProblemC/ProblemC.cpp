@@ -20,12 +20,12 @@ void get_neighbors(int* const neighbors, const int currentIndice, const int nMap
 int FindPath(const int nStartX, const int nStartY,
 	const int nTargetX, const int nTargetY,
 	const unsigned char* pMap, const int nMapWidth, const int nMapHeight,
-	int* pOutBuffer, const int nOutBufferSize) {
+	int* pOutBuffer, const int nOutBufferSize, PointAttributes* point_attributes) {
 
 	int start = nStartY * nMapWidth + nStartX;
 	int end = nTargetY * nMapWidth + nTargetX;
 
-	PointAttributes* point_attributes = new PointAttributes[nMapWidth * nMapHeight];
+	//PointAttributes* point_attributes = new PointAttributes[nMapWidth * nMapHeight];
 
 	auto compare = [](const PointQueueItem& p1, const PointQueueItem& p2) { return p1.priority > p2.priority; };
 
@@ -72,6 +72,6 @@ int FindPath(const int nStartX, const int nStartY,
 		pOutBuffer[sum - i - 2] = current_attributes.came_from;
 		current_attributes = point_attributes[current_attributes.came_from];
 	}
-	delete point_attributes;
+
 	return sum;
 }
