@@ -4,10 +4,11 @@
 #include "stdafx.h"
 #include "ProblemC.h"
 #include <queue>
-#include <cmath>
+#include <map>
+
 using namespace std;
 
-void get_neighbors(int* const neighbors, const int currentIndice, const int nMapHeight, const int nMapWidth) {
+inline void get_neighbors(int* const neighbors, const int currentIndice, const int nMapHeight, const int nMapWidth) {
 	int x = currentIndice % nMapWidth;
 	int y = currentIndice / nMapWidth;
 
@@ -20,19 +21,19 @@ void get_neighbors(int* const neighbors, const int currentIndice, const int nMap
 int FindPath(const int nStartX, const int nStartY,
 	const int nTargetX, const int nTargetY,
 	const unsigned char* pMap, const int nMapWidth, const int nMapHeight,
-	int* pOutBuffer, const int nOutBufferSize) {
+	int* pOutBuffer, const int nOutBufferSize, PointAttributes* point_attributes) {
 
 	int start = nStartY * nMapWidth + nStartX;
 	int end = nTargetY * nMapWidth + nTargetX;
 
-	PointAttributes* point_attributes = new PointAttributes[nMapWidth * nMapHeight];
+	//PointAttributes* point_attributes = new PointAttributes[nMapWidth * nMapHeight];
 
 	auto compare = [](const PointQueueItem& p1, const PointQueueItem& p2) { return p1.priority > p2.priority; };
 
 	vector<PointQueueItem> container;
 	container.reserve(nMapWidth * nMapHeight);
 	priority_queue<PointQueueItem, decltype(container), decltype(compare)> frontier(compare, container);
-	frontier.emplace(PointQueueItem{ 0, start });
+	frontier.emplace(0, start);
 
 	int neighbors[4];
 	PointAttributes& current_attributes = point_attributes[start];
@@ -55,15 +56,15 @@ int FindPath(const int nStartX, const int nStartY,
 			if (neighbor_attr.came_from == -1 || neighbor_attr.cost_sum > current_attributes.cost_sum + 1) {
 				neighbor_attr.came_from = current.indice;
 				neighbor_attr.cost_sum = current_attributes.cost_sum + 1;
-				int cost = abs(neighbors[i] % nMapWidth - end % nMapWidth) + abs(neighbors[i] / nMapWidth - end / nMapWidth);
-				frontier.push(PointQueueItem{ cost + neighbor_attr.cost_sum, neighbors[i] });
+				int cost = abs(neighbors[i] / nMapWidth - end / nMapWidth) + abs(neighbors[i] % nMapWidth - end % nMapWidth);
+				frontier.emplace(cost + neighbor_attr.cost_sum, neighbors[i]);
 			}
 		}
 	}
 
-	
-	if (current.indice != end) return -1; // Didn't find a path
-	if (nOutBufferSize < current_attributes.cost_sum) return current_attributes.cost_sum; // Path was too long
+	// Didn't find a path
+	if (current.indice != end) return -1;
+	if (nOutBufferSize < current_attributes.cost_sum) return -1;
 
 	int sum = current_attributes.cost_sum;
 	pOutBuffer[sum > 0 ? sum - 1 : 0] = end; // Just in case starting point and end point is the same
@@ -72,6 +73,5 @@ int FindPath(const int nStartX, const int nStartY,
 		pOutBuffer[sum - i - 2] = current_attributes.came_from;
 		current_attributes = point_attributes[current_attributes.came_from];
 	}
-	delete point_attributes;
 	return sum;
 }

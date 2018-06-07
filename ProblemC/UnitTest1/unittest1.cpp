@@ -6,20 +6,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest1
 {
-	
-
 	TEST_CLASS(UnitTest1)
 	{
 	public:
-		TEST_METHOD(TooShort) {
-			unsigned char pMap[] = {
-				1, 1, 1, 1, 1
-			};
-
-			int pOutBuffer[2];
-			auto res = FindPath(0, 0, 4, 0, pMap, 5, 1, pOutBuffer, 2);
-			Assert::AreEqual(4, res);
-		}
 
 		TEST_METHOD(Single) {
 			unsigned char pMap[] = {
@@ -68,23 +57,13 @@ namespace UnitTest1
 			FindPath(2, 0, 0, 2, pMap, 3, 3, pOutBuffer, 7);
 		}
 
-		TEST_METHOD(Minimal2)
+		TEST_METHOD(Minimal)
 		{
 			unsigned char pMap[] = { 1, 1 };
 			int pOutBuffer[12];
 			auto res = FindPath(0, 0, 1, 0, pMap, 2, 1, pOutBuffer, 12);
 			Assert::AreEqual(1, res);
 			Assert::AreEqual(1, pOutBuffer[0]);
-		}
-
-		TEST_METHOD(Minimal)
-		{
-			unsigned char pMap[] = { 1, 1, 1 };
-			int pOutBuffer[12];
-			auto res = FindPath(0, 0, 2, 0, pMap, 3, 1, pOutBuffer, 12);
-			Assert::AreEqual(2, res);
-			Assert::AreEqual(1, pOutBuffer[0]);
-			Assert::AreEqual(2, pOutBuffer[1]);
 		}
 
 		TEST_METHOD(DeadEnd) {
@@ -377,35 +356,6 @@ namespace UnitTest1
 
 			int steps = FindPath(20, 25, 50, 50, pMap, 64, 64, pOutBuffer, 100);
 			Assert::AreEqual(67, steps);
-		}
-
-		TEST_METHOD(NarrowPath) {
-			unsigned char pMap[] = {
-				1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-				1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-			};
-			int pOutBuffer[100];
-			auto res = FindPath(6, 20, 6, 0, pMap, 14, 21, pOutBuffer, 100);
-			Assert::AreEqual(32, res);
 		}
 	};
 }
