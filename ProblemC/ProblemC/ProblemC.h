@@ -2,7 +2,6 @@
 
 #include <climits>
 
-
 struct Point {
 	int x;
 	int y;
@@ -14,8 +13,6 @@ struct PointAttributes {
 };
 
 struct PointQueueItem {
-	PointQueueItem(int p, int i) : indice(i), priority(p) {}
-
 	int priority;
 	int indice;
 };
@@ -23,6 +20,6 @@ struct PointQueueItem {
 int FindPath(const int nStartX, const int nStartY,
 	const int nTargetX, const int nTargetY,
 	const unsigned char* pMap, const int nMapWidth, const int nMapHeight,
-	int* pOutBuffer, const int nOutBufferSize, PointAttributes* point_attributes);
+	int* pOutBuffer, const int nOutBufferSize);
 
 void get_neighbors(int* const neighbors, const int currentIndice, const int nMapHeight, const int nMapWidth);
