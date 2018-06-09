@@ -20,7 +20,7 @@ impl Default for PointAttributes {
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PointQueueItem {
     priority: i32,
-    indice: u32
+    indice: i32
 }
 
 impl Ord for PointQueueItem {
@@ -35,22 +35,23 @@ impl PartialOrd for PointQueueItem {
     }
 }
 
-fn get_neighbors(mut neighbors: &[i32], current_indice: u32, n_map_width: usize, n_map_height: usize) {
-    let x = (current_indice % n_map_width as u32) as i32;
-    let y = (current_indice / n_map_height as u32) as i32;
+fn get_neighbors(current_indice: i32, n_map_width: i32, n_map_height: i32) -> [i32; 4] {
+    let x = current_indice % n_map_width;
+    let y = current_indice / n_map_height;
 
-    neighbors[0] = if x > 0 { x - 1 + y * n_map_width } else { -1 } as i32;
-    neighbors[1] = if x < (n_map_width - 1) { x + 1 + y * n_map_width } else { -1 } as i32;
-    neighbors[2] = if y > 0 { x + (y - 1)  * n_map_width } else { -1 } as i32;
-    neighbors[3] = if y < (n_map_height - 1) { x + (y + 1)  * n_map_width } else { -1 } as i32;
+    [
+        if x > 0 { x - 1 + y * n_map_width } else { -1 },
+        if x < (n_map_width - 1) { x + 1 + y * n_map_width as i32 } else { -1 },
+        if y > 0 { x + (y - 1)  * n_map_width } else { -1 },
+        if y < (n_map_height - 1) { x + (y + 1)  * n_map_width } else { -1 }
+    ]
 }
 
-pub fn find_path(n_start_x: u32, n_start_y: u32, n_target_x: u32, n_target_y: u32, p_map: &[u8], n_map_width: usize, n_map_height: usize, mut p_out_buffer: &std::vec::Vec<i32>) -> i32 {
+pub fn find_path(n_start_x: i32, n_start_y: i32, n_target_x: i32, n_target_y: i32, p_map: &[u8], n_map_width: i32, n_map_height: i32, mut p_out_buffer: &std::vec::Vec<i32>) -> i32 {
     let start = n_start_y * n_map_width + n_start_x;
     let end = n_target_y * n_map_width + n_target_x;
 
-    let p = PointAttributes { ..Default::default() };
-    let found_path = false;
+    let mut found_path = false;
 
     let mut point_attributes: Vec<PointAttributes> = std::vec::Vec::new();
     point_attributes.reserve_exact((n_map_width * n_map_height) as usize);
@@ -59,9 +60,29 @@ pub fn find_path(n_start_x: u32, n_start_y: u32, n_target_x: u32, n_target_y: u3
     frontier.push(PointQueueItem { priority: 0, indice: start });
 
     while let Some(current) = frontier.pop() {
+        if current.indice == end {
+            found_path = true;
+            break;
+        }
+
         let current_cost = point_attributes.get(current.indice as usize).unwrap().cost_sum;
-        let neighbor_attr = point_attributes.get_mut(0).unwrap();
+
+        let neighbors = get_neighbors(current.indice, n_map_width, n_map_height);
+
+        for neighbor in neighbors.iter().filter(|&&n| n != (-1) && *p_map.get(n as usize).unwrap() != 0) {
+            let mut neighbor_attr = point_attributes.get_mut(*neighbor as usize).unwrap();
+            if neighbor_attr.came_from != (-1) && neighbor_attr.cost_sum <= current_cost + 1 { continue; }
+
+            neighbor_attr.came_from = current.indice;
+            neighbor_attr.cost_sum = current_cost + 1;
+
+            let x_cost = neighbor % n_map_width - end % n_map_width;
+            let y_cost = neighbor / n_map_width - end / n_map_width;
+            let cost = x_cost.abs() + y_cost.abs();
+            frontier.push(PointQueueItem { indice: *neighbor, priority: cost + neighbor_attr.cost_sum });
+        }
     }
 
+    if !found_path == false { return -1; }
     2
 }
