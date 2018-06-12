@@ -4,3 +4,8 @@ version = "0.1.0"
 authors = ["Fredrik Jonsén"]
 
 [dependencies]
+chrono = "0.4"
+
+[profile.release]
+debug-assertions = true
+opt-level = 2

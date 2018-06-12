@@ -1,22 +1,10 @@
+pub mod point_attributes;
+
 use std;
+use std::vec::Vec;
 use std::collections::BinaryHeap;
 use std::cmp::Ordering;
-
-#[derive(Clone)]
-pub struct PointAttributes {
-    came_from: i32,
-    cost_sum: i32
-
-}
-
-impl Default for PointAttributes {
-    fn default() -> PointAttributes {
-        PointAttributes {
-            came_from: -1,
-            cost_sum: std::i32::MAX
-        }
-    }
-}
+pub use self::point_attributes::PointAttributes;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct PointQueueItem {
@@ -48,7 +36,7 @@ fn get_neighbors(current_indice: i32, n_map_width: i32, n_map_height: i32) -> [i
     ]
 }
 
-pub fn find_path(n_start_x: i32, n_start_y: i32, n_target_x: i32, n_target_y: i32, p_map: &[u8], n_map_width: i32, n_map_height: i32, p_out_buffer: &mut std::vec::Vec<i32>) -> i32 {
+pub fn find_path(n_start_x: i32, n_start_y: i32, n_target_x: i32, n_target_y: i32, p_map: &[u8], n_map_width: i32, n_map_height: i32) -> (i32, std::vec::Vec<i32>, Vec<PointAttributes>) {
     let start = n_start_y * n_map_width + n_start_x;
     let end = n_target_y * n_map_width + n_target_x;
 
@@ -84,23 +72,30 @@ pub fn find_path(n_start_x: i32, n_start_y: i32, n_target_x: i32, n_target_y: i3
         }
     }
 
-    if !found_path { return -1; }
+    if !found_path { return (-1, std::vec::Vec::new(), std::vec::Vec::new()); }
 
-    let mut current = point_attributes.get(end as usize).unwrap();
+    let (sum, p_out_buffer) = get_path(&point_attributes, start, end);
+
+    (sum, p_out_buffer, point_attributes)
+}
+
+fn get_path(points: &Vec<PointAttributes>, start: i32, end: i32) -> (i32, Vec<i32>) {
+    let mut current = points.get(end as usize).unwrap();
+    let mut p_out_buffer = Vec::new();
+
     p_out_buffer.push(end);
-
     let sum = current.cost_sum;
 
     for _i in 0..sum {
         if current.came_from  == start { break }
         p_out_buffer.push(current.came_from);
 
-        current = point_attributes.get(current.came_from as usize).unwrap();
+        current = points.get(current.came_from as usize).unwrap();
     }
 
     p_out_buffer.reverse();
 
-    sum
+    (sum, p_out_buffer)
 }
 
 #[cfg(test)]
@@ -110,8 +105,7 @@ mod tests {
     #[test]
     fn minimal() {
         let p_map: [u8; 3] = [1, 1, 1];
-        let mut p_out_buffer = Vec::new();
-        let res = find_path(0, 0, 2, 0, &p_map, 3, 1, &mut p_out_buffer);
+        let (res, _, _) = find_path(0, 0, 2, 0, &p_map, 3, 1);
         assert_eq!(2, res);
     }
 
@@ -125,8 +119,7 @@ mod tests {
             1, 1, 1, 1, 1,
         ];
 
-        let mut p_out_buffer = Vec::new();
-        let res = find_path(2, 4, 2, 0, &p_map, 5, 5, &mut p_out_buffer);
+        let (res, _, _) = find_path(2, 4, 2, 0, &p_map, 5, 5);
         assert_eq!(8, res);
     }
 
@@ -141,8 +134,7 @@ mod tests {
             1, 1, 1, 1, 1
         ];
 
-        let mut p_out_buffer = Vec::new();
-        let res = find_path(2, 0, 2, 3, &p_map, 5, 6, &mut p_out_buffer);
+        let (res, _, _) = find_path(2, 0, 2, 3, &p_map, 5, 6);
         assert_eq!(-1, res);
     }
 }
